@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Contact;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -18,7 +19,7 @@ class ContactController extends Controller
         $user = User::where('id', '=', 1)->first();
         $user_contacts = $user->contacts()->get();
         foreach ($user_contacts as $key => $user_contact) {
-            //dd($user_contact->pivot);
+            //dd($user_contact->users);
         }
         return view('phonebook.contact.index', compact('user_contacts'));
     }
@@ -102,6 +103,18 @@ class ContactController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $result = DB::table('contact_users')
+            ->where('id', '=', $id)->delete();
+        if ($result > 0) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Contact has been updated.'
+            ]);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'Something went wrong.'
+            ]);
+        }
     }
 }

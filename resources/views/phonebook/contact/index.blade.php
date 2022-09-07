@@ -23,16 +23,65 @@
                                     </p>
                                 </div>
                                 <div class="flex-grow py-md-2 py-xl-0 float-right">
-                                    <div class="icon icon-box-danger float-right">
-                                        <span class="mdi mdi-delete icon-item"></span>
+                                    <div class="float-right">
+                                        <button type="button" class="btn btn-social-icon btn-youtube"><i
+                                                class="mdi mdi-delete"></i></button>
                                     </div>
-                                    <div class="icon icon-box-success float-right mr-2">
-                                        <span class="mdi mdi-lead-pencil icon-item"></span>
-
+                                    <div class="float-right mr-2">
+                                        <button type="button" data-name="{{ $user_contact->users[$key]->name }}"
+                                            data-number="{{ $user_contact->number }}"
+                                            data-nickname="{{ $user_contact->pivot->nickname }}"
+                                            data-id="{{ $user_contact->pivot->id }}"
+                                            class="btn btn-social-icon btn-facebook edit-contact" data-toggle="modal"
+                                            data-target="#contactModal"><i class="mdi mdi-lead-pencil"></i></button>
                                     </div>
                                 </div>
                             </div>
                         @endforeach
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Modal -->
+        <div class="modal fade" id="contactModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="main-form" class="form-sample">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <label class="col-sm-1 col-form-label">Nickname</label>
+                                    <div class="col-sm-11">
+                                        <input type="text" class="form-control required" id="nickname"
+                                            name="nickname" />
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <label class="col-sm-1 col-form-label">Name</label>
+                                    <div class="col-sm-11">
+                                        <input type="text" class="form-control required" id="name" name="name"
+                                            disabled />
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <label class="col-sm-1 col-form-label">Number</label>
+                                    <div class="col-sm-11">
+                                        <input type="text" class="form-control required" id="number" name="number"
+                                            disabled />
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" id="save-contact">Save changes</button>
                     </div>
                 </div>
             </div>
@@ -53,5 +102,86 @@
         <!-- End custom js for this page -->
         <script src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
         <script src="https://cdn.datatables.net/1.12.1/js/dataTables.bootstrap4.min.js"></script>
-        <script src="{{ url('assets/modules/js/employee.js') }}"></script>
+        <script>
+            $(function() {
+                $.ajaxSetup({
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    }
+                });
+
+                let name = $('#name');
+                let number = $('#number');
+                let nickname = $('#nickname');
+                let id = 0;
+                $(".edit-contact").click(function() {
+                    let dName = $(this).data("name");
+                    let dNumber = $(this).data("number");
+                    let dNickname = $(this).data("nickname");
+                    id = $(this).data("id");
+                    name.val(dName);
+                    number.val(dNumber);
+                    nickname.val(dNickname);
+                });
+
+                $('#save-contact').click(function() {
+                    $('#save-contact').text('Processing ..').prop("disabled", true);
+                    var form_data = new FormData()
+                    form_data.append('id', id);
+                    form_data.append('nickname', nickname.val());
+                    form_data.append('_method', 'PATCH');
+                    $.ajax({
+                        data: form_data,
+                        url: '/contact/' + id + '/update',
+                        type: "POST",
+                        contentType: false, // The content type used when sending data to the server.
+                        cache: false, // To unable request pages to be cached
+                        processData: false,
+                        success: function(data) {
+                            if (data.success) {
+                                swal({
+                                    title: "Success!",
+                                    text: "Contact has been updated.",
+                                    icon: "success",
+                                    buttons: false,
+                                    timer: 3000
+                                });
+                                setTimeout(() => {
+                                    location.reload();
+                                }, 3000);
+                                $('#save-contact').text('Submit').prop("disabled", false);
+                            } else {
+                                swal({
+                                    title: "Error!",
+                                    text: data.message,
+                                    icon: "error",
+                                    buttons: false,
+                                    timer: 3000
+                                });
+                                console.log('Something went wrong.');
+                            }
+                            $('#save-contact').text('Submit').prop("disabled", false);
+                        },
+                        error: function(data) {
+                            alert('Error:', data);
+                            $.each(data.responseJSON.errors, function(key, value) {
+                                swal({
+                                    title: "Error!",
+                                    text: value,
+                                    icon: "error",
+                                    buttons: false,
+                                    timer: 3000
+                                });
+                                setTimeout(() => {
+                                    location.reload();
+                                }, 3000);
+                                $('#save-contact').text('Submit').prop("disabled",
+                                    false);
+                            });
+                        }
+                    });
+                });
+
+            });
+        </script>
     @endpush

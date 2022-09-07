@@ -37,6 +37,39 @@ class ContactController extends Controller
     }
 
     /**
+     * Search for specific data.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function search(Request $request)
+    {
+        if ($request->ajax()) {
+            $contacts = Contact::where('number', 'LIKE', '%' . $request->search . '%')
+                ->where('user_id', '<>', auth()->user()->id)->get();
+            if (count($contacts) > 0) {
+                foreach ($contacts as $contact) {
+                    $data[] = [
+                        'contact_id' => $contact->id,
+                        'contact' => $contact->number,
+                        'name' => $contact->user->name
+                    ];
+                }
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Results found',
+                    'data' => $data
+                ]);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No results found'
+                ]);
+            }
+        }
+    }
+
+    /**
      * Show the form for creating a new resource.
      *
      * @return \Illuminate\Http\Response
@@ -54,7 +87,24 @@ class ContactController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        if ($request->ajax()) {
+            $check = DB::table('contact_users')
+                ->where('contact_id', '=', $request->contact_id)
+                ->where('user_id', '=', auth()->user()->id)->count();
+            if ($check == 0) {
+                $contact = Contact::where('id', '=', $request->contact_id)->first();
+                $contact->users()->attach(auth()->user());
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Contact number has been added.'
+                ]);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'This number is already in your contact list.'
+                ]);
+            }
+        }
     }
 
     /**

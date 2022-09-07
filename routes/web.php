@@ -24,11 +24,13 @@ Route::get('/logout', function () {
 
 Route::prefix('/')->group(function () {
     Route::get('/', [LoginController::class, 'index'])->name('phonebook.home.index');
-    Route::post('/login', [LoginController::class, 'store'])->name('phonebook.home.login');;
+    Route::post('/login', [LoginController::class, 'store'])->name('phonebook.home.login');
 });
 
 Route::prefix('contact')->middleware('auth')->group(function () {
     Route::get('/', [ContactController::class, 'index'])->name('phonebook.admin.contact.index');
+    Route::post('/search', [ContactController::class, 'search'])->name('phonebook.admin.contact.search');
+    Route::post('/store', [ContactController::class, 'store'])->name('phonebook.admin.contact.store');
     Route::patch('/{id}/update', [ContactController::class, 'update'])->name('phonebook.admin.contact.update');
     Route::delete('/{id}/delete', [ContactController::class, 'destroy'])->name('phonebook.admin.contact.destroy');
 });

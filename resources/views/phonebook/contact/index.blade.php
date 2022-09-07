@@ -10,7 +10,11 @@
                 <div class="card">
                     <div class="card-body">
                         <h4 class="card-title">My Contacts</h4>
-                        <input type="text" class="form-control" placeholder="Search contacts">
+                        <input type="text" class="form-control" placeholder="look up a number, then choose to add ..."
+                            id="search">
+                        <ul id="searchResult"></ul>
+                        <div class="clear"></div>
+                        <div id="userDetail"></div>
                         @foreach ($user_contacts as $key => $user_contact)
                             <div
                                 class="bg-gray-dark d-flex d-md-block d-xl-flex flex-row py-3 px-4 px-md-3 px-xl-4 rounded mt-3">
@@ -95,6 +99,36 @@
         <link rel="stylesheet" href="{{ url('assets/modules/css/datatable.css') }}">
         <link href="https://cdn.datatables.net/1.12.1/css/dataTables.bootstrap4.min.css" rel="stylesheet">
         <link rel="stylesheet" href="{{ url('assets/scss/style.css') }}">
+        <style>
+            .clear {
+                clear: both;
+                margin-top: 20px;
+            }
+
+            #searchResult {
+                list-style: none;
+                padding: 0px;
+                width: 100%;
+                position: absolute;
+                margin: 0;
+            }
+
+            #searchResult li {
+                background: #8d8787;
+                color: black;
+                padding: 4px;
+                margin-bottom: 1px;
+            }
+
+            #searchResult li:nth-child(even) {
+                background: #D3D3D3;
+                color: black;
+            }
+
+            #searchResult li:hover {
+                cursor: pointer;
+            }
+        </style>
     @endpush
     @push('scripts')
         <!-- Plugin js for this page -->
@@ -245,5 +279,83 @@
                 });
 
             });
+
+            $("#search").keyup(function() {
+                var search = $(this).val();
+
+                if (search != "") {
+                    var form_data = new FormData()
+                    form_data.append('search', search);
+                    $.ajax({
+                        data: form_data,
+                        url: "{{ route('phonebook.admin.contact.search') }}",
+                        type: "POST",
+                        contentType: false, // The content type used when sending data to the server.
+                        cache: false, // To unable request pages to be cached
+                        processData: false,
+                        success: function(response) {
+                            $("#searchResult").empty();
+                            if (response.success) {
+                                console.log(response.data);
+                                for (var i = 0; i < response.data.length; i++) {
+                                    var contact_id = response.data[i]['contact_id'];
+                                    var contact = response.data[i]['contact'];
+                                    var name = response.data[i]['name'];
+                                    $("#searchResult").append("<li value='" + contact_id + "'>" + name +
+                                        " - " + contact + "</li>");
+                                }
+                                // binding click event to li
+                                $("#searchResult li").bind("click", function() {
+                                    addContact(this);
+                                });
+                            } else {
+                                $("#searchResult").append("<li>No matches found</li>");
+                            }
+                        }
+                    });
+                } else {
+                    $("#searchResult").empty();
+                }
+
+            });
+
+            // Set Text to search box and add contact
+            function addContact(element) {
+                console.log($(element).val());
+                var contact_id = $(element).val();
+                var form_data = new FormData()
+                form_data.append('contact_id', contact_id);
+                $.ajax({
+                    data: form_data,
+                    url: "{{ route('phonebook.admin.contact.store') }}",
+                    type: "POST",
+                    contentType: false, // The content type used when sending data to the server.
+                    cache: false, // To unable request pages to be cached
+                    processData: false,
+                    success: function(response) {
+                        if (response.success) {
+                            swal({
+                                title: "Success!",
+                                text: response.message,
+                                icon: "success",
+                                buttons: false,
+                                timer: 3000
+                            });
+                            setTimeout(() => {
+                                location.reload();
+                            }, 3000);
+                        } else {
+                            swal({
+                                title: "Error!",
+                                text: response.message,
+                                icon: "error",
+                                buttons: false,
+                                timer: 3000
+                            });
+                            console.log('Something went wrong.');
+                        }
+                    }
+                });
+            }
         </script>
     @endpush

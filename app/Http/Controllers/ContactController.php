@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class ContactController extends Controller
@@ -13,7 +14,12 @@ class ContactController extends Controller
      */
     public function index()
     {
-        return view('layouts.admin');
+        $user = User::where('id', '=', 1)->first();
+        $user_contacts = $user->contacts()->get();
+        foreach ($user_contacts as $key => $user_contact) {
+            //dd($user_contact->pivot);
+        }
+        return view('phonebook.contact.index', compact('user_contacts'));
     }
 
     /**

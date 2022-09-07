@@ -23,4 +23,6 @@ Route::prefix('/')->group(function () {
 
 Route::prefix('contact')->group(function () {
     Route::get('/', [ContactController::class, 'index'])->name('phonebook.admin.contact.index');
+    Route::patch('/{id}/update', [ContactController::class, 'update'])->name('phonebook.admin.contact.update');
+    Route::delete('/{id}/delete', [ContactController::class, 'destroy'])->name('phonebook.admin.contact.destroy');
 });

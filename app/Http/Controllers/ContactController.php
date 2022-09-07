@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ContactController extends Controller
 {
@@ -74,7 +75,23 @@ class ContactController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $data = [
+            'nickname' => $request->nickname
+        ];
+        $contact_user = DB::table('contact_users')
+            ->where('id', '=', $id)
+            ->update($data);
+        if ($contact_user > 0) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Contact has been updated.'
+            ]);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'Something went wrong.'
+            ]);
+        }
     }
 
     /**

@@ -17,4 +17,9 @@ class Contact extends Model
     {
         return $this->belongsToMany(User::class, 'contact_users', 'contact_id', 'user_id')->withPivot('nickname')->withPivot('id');
     }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

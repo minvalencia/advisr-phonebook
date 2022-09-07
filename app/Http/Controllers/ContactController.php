@@ -10,18 +10,30 @@ use Illuminate\Support\Facades\DB;
 class ContactController extends Controller
 {
     /**
+     * Create a new controller instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+    /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
     public function index()
     {
-        $user = User::where('id', '=', 1)->first();
+        $user = User::where('id', '=', auth()->user()->id)->first();
+
         $user_contacts = $user->contacts()->get();
+
         foreach ($user_contacts as $key => $user_contact) {
-            //dd($user_contact->users);
+            $result = Contact::find($user_contact->pivot->contact_id)->user()->get();
+            $user_name[] = $result[0]->name;
         }
-        return view('phonebook.contact.index', compact('user_contacts'));
+        return view('phonebook.contact.index', compact('user_contacts', 'user_name'));
     }
 
     /**

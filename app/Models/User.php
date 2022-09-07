@@ -46,4 +46,9 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Contact::class, 'contact_users', 'user_id', 'contact_id')->withPivot('nickname')->withPivot('id');
     }
+
+    public function contact()
+    {
+        return $this->hasOne(Contact::class);
+    }
 }

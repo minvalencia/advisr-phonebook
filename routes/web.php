@@ -1,8 +1,10 @@
 <?php
 
-use App\Http\Controllers\ContactController;
-use App\Http\Controllers\LoginController;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\LoginController;
+use App\Http\Controllers\ContactController;
+use Illuminate\Support\Facades\Redirect;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,13 +17,17 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::prefix('/')->group(function () {
-    Route::get('/', [LoginController::class, 'index'])->name('phonebook.home.index');
-    Route::post('/login', [LoginController::class, 'login'])->name('phonebook.home.login');
-    Route::get('/logout', [LoginController::class, 'logout'])->name('phonebook.admin.logout');
+Route::get('/logout', function () {
+    Auth::logout();
+    return Redirect::to('/');
 });
 
-Route::prefix('contact')->group(function () {
+Route::prefix('/')->group(function () {
+    Route::get('/', [LoginController::class, 'index'])->name('phonebook.home.index');
+    Route::post('/login', [LoginController::class, 'store'])->name('phonebook.home.login');;
+});
+
+Route::prefix('contact')->middleware('auth')->group(function () {
     Route::get('/', [ContactController::class, 'index'])->name('phonebook.admin.contact.index');
     Route::patch('/{id}/update', [ContactController::class, 'update'])->name('phonebook.admin.contact.update');
     Route::delete('/{id}/delete', [ContactController::class, 'destroy'])->name('phonebook.admin.contact.destroy');

@@ -1,0 +1,33 @@
+
+.badge-outline-cyan {
+    color: #57c7d4;
+    border: 1px solid #57c7d4;
+}
+
+.badge-outline-darkslategray {
+    color: #2e383e;
+    border: 1px solid #2e383e;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #a70404 !important;
+    border-color: #a70404 !important;
+}
+
+.pagination .page-link {
+    background-color: #800101 !important;
+    border-color: #800101 !important;
+    color: #ffffff;
+}
+
+.pagination .page-link:hover {
+    background-color: #800101 !important;
+    border-color: #800101 !important;
+    color: #ffffff;
+}
+
+.main-table tbody tr:hover {
+    background-color: rgba(255, 0, 0, 0.3) !important;
+    border-color: #4b0101;
+    color: #ffffff !important;
+}

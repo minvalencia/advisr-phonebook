@@ -1,0 +1,37 @@
+.index {
+    text-align: center;
+    vertical-align: middle;
+    color: #aaa;
+}
+
+.page-limit-options {
+    min-width: 80px;
+}
+
+.pagination .page-item .page-link {
+    border-radius: 30px !important;
+    margin: 0 3px !important;
+    border: none;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    text-align: center;
+    line-height: 32px;
+}
+
+.pagination .page-item .page-link:hover {
+    z-index: 2;
+    color: #ffff;
+    background-color: #440202;
+}
+
+.pagination .page-item.active .page-link {
+    z-index: 3;
+    color: #fff;
+    background-color: #c0020b;
+    border-color: #c0020b;
+}
+
+.overflow-hidden {
+    overflow: hidden;
+}

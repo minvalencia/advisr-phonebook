@@ -22,7 +22,7 @@
                 <div class="dropdown-menu dropdown-menu-right sidebar-dropdown preview-list"
                     aria-labelledby="profile-dropdown">
                     <div class="dropdown-divider"></div>
-                    <a href="{{ route('phonebook.admin.logout') }}" class="dropdown-item preview-item">
+                    <a href="{{ url('logout') }}" class="dropdown-item preview-item">
                         <div class="preview-thumbnail">
                             <div class="preview-icon bg-dark rounded-circle">
                                 <i class="mdi mdi-logout text-danger"></i>

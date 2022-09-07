@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 
 class LoginController extends Controller
 {
@@ -34,7 +37,17 @@ class LoginController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $success = true;
+        $credentials = $request->only('email', 'password');
+        if (Auth::attempt($credentials)) {
+            $user = User::where('email', '=', $request->email)->first();
+            $request->session()->put('name', $user->name);
+            $success = true;
+            return response()->json(['success' => $success, 'message' => 'Welcome', 'url' => '/contact']);
+        } else {
+            $success = false;
+            return response()->json(['success' => $success, 'message' => 'Authentication failed!.']);
+        }
     }
 
     /**

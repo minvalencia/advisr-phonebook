@@ -65,7 +65,13 @@
                                 var origin = window.location.origin;
                                 window.location.href = origin + data.url;
                             } else {
-                                alert(data.message);
+                                swal({
+                                    title: "Error!",
+                                    text: data.message,
+                                    icon: "error",
+                                    buttons: false,
+                                    timer: 3000
+                                });
                                 console.log('Something went wrong.');
                             }
                             $('#login').text('Submit').prop("disabled", false);

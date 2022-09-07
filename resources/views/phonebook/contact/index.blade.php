@@ -16,7 +16,7 @@
                                 class="bg-gray-dark d-flex d-md-block d-xl-flex flex-row py-3 px-4 px-md-3 px-xl-4 rounded mt-3">
                                 <div class="text-md-center text-xl-left">
                                     <h6 class="mb-1">{{ $user_contact->number }}</h6>
-                                    <p class="text-muted mb-0">{{ $user_contact->users[$key]->name }}
+                                    <p class="text-muted mb-0">{{ $user_name[$key] }}
                                         @if ($user_contact->pivot->nickname)
                                             ({{ $user_contact->pivot->nickname }})
                                         @endif
@@ -29,7 +29,7 @@
                                                 class="mdi mdi-delete"></i></button>
                                     </div>
                                     <div class="float-right mr-2">
-                                        <button type="button" data-name="{{ $user_contact->users[$key]->name }}"
+                                        <button type="button" data-name="{{ $user_name[$key] }}"
                                             data-number="{{ $user_contact->number }}"
                                             data-nickname="{{ $user_contact->pivot->nickname }}"
                                             data-id="{{ $user_contact->pivot->id }}"
@@ -161,7 +161,7 @@
                                         } else {
                                             swal({
                                                 title: "Error!",
-                                                text: error_message[data.error_no],
+                                                text: data.message,
                                                 icon: "error",
                                                 buttons: false,
                                                 timer: 3000

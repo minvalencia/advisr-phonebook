@@ -24,7 +24,8 @@
                                 </div>
                                 <div class="flex-grow py-md-2 py-xl-0 float-right">
                                     <div class="float-right">
-                                        <button type="button" class="btn btn-social-icon btn-youtube"><i
+                                        <button type="button" class="btn btn-social-icon btn-youtube delete-contact"
+                                            data-pivotid="{{ $user_contact->pivot->id }}"><i
                                                 class="mdi mdi-delete"></i></button>
                                     </div>
                                     <div class="float-right mr-2">
@@ -124,6 +125,67 @@
                     nickname.val(dNickname);
                 });
 
+                $(".delete-contact").click(function() {
+                    let pivotId = $(this).data("pivotid");
+                    swal({
+                            title: "Are you really sure?",
+                            text: "This is very dangerous, you shouldn't do it!",
+                            icon: "warning",
+                            buttons: true,
+                            dangerMode: true,
+                        })
+                        .then((willDelete) => {
+                            if (willDelete) {
+                                var form_data = new FormData()
+                                var id = $(this).data("id");
+                                form_data.append('_method', 'DELETE');
+                                $.ajax({
+                                    data: form_data,
+                                    url: '/contact/' + pivotId + '/delete',
+                                    type: "POST",
+                                    contentType: false, // The content type used when sending data to the server.
+                                    cache: false, // To unable request pages to be cached
+                                    processData: false,
+                                    success: function(data) {
+                                        if (data.success) {
+                                            swal({
+                                                title: "Success!",
+                                                text: "Contact has beem deleted.",
+                                                icon: "success",
+                                                buttons: false,
+                                                timer: 3000
+                                            });
+                                            setTimeout(() => {
+                                                location.reload();
+                                            }, 3000);
+                                        } else {
+                                            swal({
+                                                title: "Error!",
+                                                text: error_message[data.error_no],
+                                                icon: "error",
+                                                buttons: false,
+                                                timer: 3000
+                                            });
+                                            console.log('Something went wrong.');
+                                        }
+                                    },
+                                    error: function(data) {
+                                        alert('Error:', data);
+                                        $.each(data.responseJSON.errors, function(key, value) {
+                                            swal({
+                                                title: "Error!",
+                                                text: value,
+                                                icon: "error",
+                                                buttons: false,
+                                                timer: 3000
+                                            });
+                                            console(value);
+                                        });
+                                    }
+                                });
+                            }
+                        });
+                });
                 $('#save-contact').click(function() {
                     $('#save-contact').text('Processing ..').prop("disabled", true);
                     var form_data = new FormData()

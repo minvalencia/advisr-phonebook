@@ -27,6 +27,7 @@ class ContactController extends Controller
     {
         $user = User::where('id', '=', auth()->user()->id)->first();
         $user_contacts = $user->contacts()->paginate(10);
+        $user_name = [];
         foreach ($user_contacts as $key => $user_contact) {
             $result = Contact::find($user_contact->pivot->contact_id)->user()->get();
             $user_name[] = $result[0]->name;

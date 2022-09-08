@@ -23,15 +23,17 @@ class ContactController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(REquest $request)
     {
         $user = User::where('id', '=', auth()->user()->id)->first();
-
-        $user_contacts = $user->contacts()->get();
-
+        $user_contacts = $user->contacts()->paginate(10);
         foreach ($user_contacts as $key => $user_contact) {
             $result = Contact::find($user_contact->pivot->contact_id)->user()->get();
             $user_name[] = $result[0]->name;
+        }
+        if ($request->ajax()) {
+            $view = view('phonebook.contact.contact-data', compact('user_contacts', 'user_name'))->render();
+            return response()->json(['html' => $view]);
         }
         return view('phonebook.contact.index', compact('user_contacts', 'user_name'));
     }

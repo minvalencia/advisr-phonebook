@@ -15,34 +15,12 @@
                         <ul id="searchResult"></ul>
                         <div class="clear"></div>
                         <div id="userDetail"></div>
-                        @foreach ($user_contacts as $key => $user_contact)
-                            <div
-                                class="bg-gray-dark d-flex d-md-block d-xl-flex flex-row py-3 px-4 px-md-3 px-xl-4 rounded mt-3">
-                                <div class="text-md-center text-xl-left">
-                                    <h6 class="mb-1">{{ $user_contact->number }}</h6>
-                                    <p class="text-muted mb-0">{{ $user_name[$key] }}
-                                        @if ($user_contact->pivot->nickname)
-                                            ({{ $user_contact->pivot->nickname }})
-                                        @endif
-                                    </p>
-                                </div>
-                                <div class="flex-grow py-md-2 py-xl-0 float-right">
-                                    <div class="float-right">
-                                        <button type="button" class="btn btn-social-icon btn-youtube delete-contact"
-                                            data-pivotid="{{ $user_contact->pivot->id }}"><i
-                                                class="mdi mdi-delete"></i></button>
-                                    </div>
-                                    <div class="float-right mr-2">
-                                        <button type="button" data-name="{{ $user_name[$key] }}"
-                                            data-number="{{ $user_contact->number }}"
-                                            data-nickname="{{ $user_contact->pivot->nickname }}"
-                                            data-id="{{ $user_contact->pivot->id }}"
-                                            class="btn btn-social-icon btn-facebook edit-contact" data-toggle="modal"
-                                            data-target="#contactModal"><i class="mdi mdi-lead-pencil"></i></button>
-                                    </div>
-                                </div>
-                            </div>
-                        @endforeach
+                        <div id="div_contact">
+                            @include('phonebook.contact.contact-data')
+                        </div>
+                        <div class="load-data text-center" style="display:none">
+                            <i class="mdi mdi-48px mdi-spin mdi-loading"></i> Loading ...
+                        </div>
                     </div>
                 </div>
             </div>
@@ -213,7 +191,6 @@
                                                 buttons: false,
                                                 timer: 3000
                                             });
-                                            console(value);
                                         });
                                     }
                                 });
@@ -296,7 +273,6 @@
                         success: function(response) {
                             $("#searchResult").empty();
                             if (response.success) {
-                                console.log(response.data);
                                 for (var i = 0; i < response.data.length; i++) {
                                     var contact_id = response.data[i]['contact_id'];
                                     var contact = response.data[i]['contact'];
@@ -321,7 +297,6 @@
 
             // Set Text to search box and add contact
             function addContact(element) {
-                console.log($(element).val());
                 var contact_id = $(element).val();
                 var form_data = new FormData()
                 form_data.append('contact_id', contact_id);
@@ -357,5 +332,41 @@
                     }
                 });
             }
+
+            function loadMoreData(page) {
+                $.ajax({
+                        url: '?page=' + page,
+                        type: 'get',
+                        beforeSend: function() {
+                            $(".load-data").show();
+                        }
+                    })
+                    .done(function(data) {
+                        if (data.html == "") {
+                            $('.load-data').html("No more contacts Found!");
+                            return;
+                        }
+                        $('.load-data').hide();
+                        $("#div_contact").append(data.html);
+                    })
+                    // Call back function
+                    .fail(function(jqXHR, ajaxOptions, thrownError) {
+                        console.log("Server not responding.....");
+                    });
+
+            }
+            //function for Scroll Event
+            var page = 1;
+            $(window).scroll(function() {
+                let val = $(window).scrollTop() + $(window).height();
+                let rnd = Math.round(val);
+
+                if (rnd >= $(document).height()) {
+                    page++;
+                    if ({!! $user_contacts->lastPage() !!} == page) {
+                        loadMoreData(page);
+                    }
+                }
+            });
         </script>
     @endpush

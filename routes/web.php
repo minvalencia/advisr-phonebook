@@ -22,9 +22,14 @@ Route::get('/logout', function () {
     return Redirect::to('/');
 });
 
+Route::get('/register', function () {
+    return view('auth.register');
+});
+
 Route::prefix('/')->group(function () {
     Route::get('/', [LoginController::class, 'index'])->name('phonebook.home.index');
     Route::post('/login', [LoginController::class, 'store'])->name('phonebook.home.login');
+    Route::post('/register', [LoginController::class, 'register'])->name('phonebook.home.register');
 });
 
 Route::prefix('contact')->middleware('auth')->group(function () {

@@ -24,6 +24,9 @@
                         <div class="text-center">
                             <button id="login" type="button" class="btn btn-primary btn-block enter-btn">Login</button>
                         </div>
+                        <div class="text-center">
+                            <a href="{{ url('/register') }}">Register</a>
+                        </div>
                     </form>
                 </div>
             </div>
